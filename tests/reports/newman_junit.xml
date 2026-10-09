@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Equinox Pay - Production Verification Suite (Phases 1-10)" tests="21" time="2.501">
+  <testsuite name="Phase 1 &amp; 2: Core Transfers &amp; State Machine / 1.1 Auth - Register Payer Alice" id="6536e6f3-1f62-4dab-9a80-68f779bd5b96" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.155">
+    <testcase name="Status is 200 OK" time="0.155" classname="Phase1Amp2CoreTransfersAmpStateMachine11AuthRegisterPayerAlice"/>
+    <testcase name="Token returned" time="0.155" classname="Phase1Amp2CoreTransfersAmpStateMachine11AuthRegisterPayerAlice"/>
+  </testsuite>
+  <testsuite name="Phase 1 &amp; 2: Core Transfers &amp; State Machine / 1.2 Auth - Register Payee Bob" id="9a00d50a-243f-4046-92d2-42649b771390" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.092">
+    <testcase name="Status is 200 OK" time="0.092" classname="Phase1Amp2CoreTransfersAmpStateMachine12AuthRegisterPayeeBob"/>
+    <testcase name="Token returned" time="0.092" classname="Phase1Amp2CoreTransfersAmpStateMachine12AuthRegisterPayeeBob"/>
+  </testsuite>
+  <testsuite name="Phase 1 &amp; 2: Core Transfers &amp; State Machine / 1.3 Core Transfer - Successful Peer-to-Peer Settlement" id="3be4bf8e-8b66-4644-bddb-a27114629ddf" timestamp="2026-10-09T16:37:49.233Z" tests="4" failures="0" errors="0" time="0.061">
+    <testcase name="Status is 200 OK" time="0.061" classname="Phase1Amp2CoreTransfersAmpStateMachine13CoreTransferSuccessfulPeerToPeerSettlement"/>
+    <testcase name="State transitioned to SETTLED" time="0.061" classname="Phase1Amp2CoreTransfersAmpStateMachine13CoreTransferSuccessfulPeerToPeerSettlement"/>
+    <testcase name="Payment ID generated" time="0.061" classname="Phase1Amp2CoreTransfersAmpStateMachine13CoreTransferSuccessfulPeerToPeerSettlement"/>
+    <testcase name="Amount matches" time="0.061" classname="Phase1Amp2CoreTransfersAmpStateMachine13CoreTransferSuccessfulPeerToPeerSettlement"/>
+  </testsuite>
+  <testsuite name="Phase 1 &amp; 2: Core Transfers &amp; State Machine / 1.4 Idempotency Guard - Duplicate Replay Rejection (Expect 409)" id="1291f2a7-7780-468f-8d8c-8b47432be6f5" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.048">
+    <testcase name="Status is 409 Conflict" time="0.048" classname="Phase1Amp2CoreTransfersAmpStateMachine14IdempotencyGuardDuplicateReplayRejectionExpect409"/>
+    <testcase name="Conflict message confirms already processed" time="0.048" classname="Phase1Amp2CoreTransfersAmpStateMachine14IdempotencyGuardDuplicateReplayRejectionExpect409"/>
+  </testsuite>
+  <testsuite name="Phase 1 &amp; 2: Core Transfers &amp; State Machine / 1.5 Core Vault Direct Settlement - Genesis Node (api/v1/vault)" id="9196694c-2a1c-4989-925d-1d8572bcb2b2" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.036">
+    <testcase name="Status is 200 OK" time="0.036" classname="Phase1Amp2CoreTransfersAmpStateMachine15CoreVaultDirectSettlementGenesisNodeApiV1Vault"/>
+    <testcase name="Confirmation message received" time="0.036" classname="Phase1Amp2CoreTransfersAmpStateMachine15CoreVaultDirectSettlementGenesisNodeApiV1Vault"/>
+  </testsuite>
+  <testsuite name="Phase 1 &amp; 2: Core Transfers &amp; State Machine / 1.6 Insufficient Funds Guard - Overdraft Rejection (Expect 409)" id="8954a4bd-1b79-48cb-8393-03304fff9954" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.050">
+    <testcase name="Status is 409 Conflict" time="0.050" classname="Phase1Amp2CoreTransfersAmpStateMachine16InsufficientFundsGuardOverdraftRejectionExpect409"/>
+    <testcase name="Error message specifies Insufficient funds" time="0.050" classname="Phase1Amp2CoreTransfersAmpStateMachine16InsufficientFundsGuardOverdraftRejectionExpect409"/>
+  </testsuite>
+  <testsuite name="Phase 3: Edge Defense &amp; Security Controls / 3.1 Input Validation - Reject Negative Transfer Amount (Expect 400)" id="bf08f4a9-c5af-42e0-9a82-cd9f6ea67b7a" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.018">
+    <testcase name="Status is 400 Bad Request" time="0.018" classname="Phase3EdgeDefenseAmpSecurityControls31InputValidationRejectNegativeTransferAmountExpect400"/>
+    <testcase name="Validation message explains positive amount" time="0.018" classname="Phase3EdgeDefenseAmpSecurityControls31InputValidationRejectNegativeTransferAmountExpect400"/>
+  </testsuite>
+  <testsuite name="Phase 3: Edge Defense &amp; Security Controls / 3.2 Input Validation - Reject Zero Transfer Amount (Expect 400)" id="bf1471af-50b0-44e4-bc4c-102fbe8f621b" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.020">
+    <testcase name="Status is 400 Bad Request" time="0.020" classname="Phase3EdgeDefenseAmpSecurityControls32InputValidationRejectZeroTransferAmountExpect400"/>
+    <testcase name="Validation message explains positive amount" time="0.020" classname="Phase3EdgeDefenseAmpSecurityControls32InputValidationRejectZeroTransferAmountExpect400"/>
+  </testsuite>
+  <testsuite name="Phase 3: Edge Defense &amp; Security Controls / 3.3 Device Fingerprinting - Reject Mismatched User-Agent (Expect 401)" id="82ca9459-07a2-4c3f-a1cf-70ad03bded23" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.016">
+    <testcase name="Status is 401 Unauthorized" time="0.016" classname="Phase3EdgeDefenseAmpSecurityControls33DeviceFingerprintingRejectMismatchedUserAgentExpect401"/>
+    <testcase name="Error notes session hijack / device change" time="0.016" classname="Phase3EdgeDefenseAmpSecurityControls33DeviceFingerprintingRejectMismatchedUserAgentExpect401"/>
+  </testsuite>
+  <testsuite name="Phase 3: Edge Defense &amp; Security Controls / 3.4 Fraud Velocity Shield - Volumetric Exceed Guard (Expect 429)" id="f162b76d-72e9-44bb-8e9f-2364f2cf71e4" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.026">
+    <testcase name="Status is 429 Too Many Requests" time="0.026" classname="Phase3EdgeDefenseAmpSecurityControls34FraudVelocityShieldVolumetricExceedGuardExpect429"/>
+    <testcase name="Velocity limit error returned" time="0.026" classname="Phase3EdgeDefenseAmpSecurityControls34FraudVelocityShieldVolumetricExceedGuardExpect429"/>
+  </testsuite>
+  <testsuite name="Phase 4: CQRS Elasticsearch Engine / 4.1 Payment History CQRS Read Model Query" id="73b1c81e-0a10-43f2-b0d2-c2e1fad70090" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.278">
+    <testcase name="Status is 200 OK" time="0.278" classname="Phase4CqrsElasticsearchEngine41PaymentHistoryCqrsReadModelQuery"/>
+    <testcase name="Returns an array from Elasticsearch" time="0.278" classname="Phase4CqrsElasticsearchEngine41PaymentHistoryCqrsReadModelQuery"/>
+  </testsuite>
+  <testsuite name="Phase 5: Merchant Invoices &amp; Webhooks / 5.1 Auth - Register Merchant Charlie" id="40bbcf10-d15a-4096-b2f2-31da856330b1" timestamp="2026-10-09T16:37:49.233Z" tests="1" failures="0" errors="0" time="0.088">
+    <testcase name="Status is 200 OK" time="0.088" classname="Phase5MerchantInvoicesAmpWebhooks51AuthRegisterMerchantCharlie"/>
+  </testsuite>
+  <testsuite name="Phase 5: Merchant Invoices &amp; Webhooks / 5.2 RBAC Guard - Customer Forbidden from Merchant Route (Expect 403)" id="0eb4cd9a-20c6-4b08-88f4-6a923441a911" timestamp="2026-10-09T16:37:49.233Z" tests="1" failures="0" errors="0" time="0.015">
+    <testcase name="Status is 403 Forbidden" time="0.015" classname="Phase5MerchantInvoicesAmpWebhooks52RbacGuardCustomerForbiddenFromMerchantRouteExpect403"/>
+  </testsuite>
+  <testsuite name="Phase 5: Merchant Invoices &amp; Webhooks / 5.3 Merchant Configures Webhook Endpoint &amp; Generates Secret" id="d58e2e68-b22c-440f-b167-45581dadc512" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.023">
+    <testcase name="Status is 200 OK" time="0.023" classname="Phase5MerchantInvoicesAmpWebhooks53MerchantConfiguresWebhookEndpointAmpGeneratesSecret"/>
+    <testcase name="Webhook secret starts with whsec_" time="0.023" classname="Phase5MerchantInvoicesAmpWebhooks53MerchantConfiguresWebhookEndpointAmpGeneratesSecret"/>
+  </testsuite>
+  <testsuite name="Phase 5: Merchant Invoices &amp; Webhooks / 5.4 Merchant Generates Invoice with 24-Hour Expiry Window" id="624ce1b9-4039-4436-818d-6737cf4c7f75" timestamp="2026-10-09T16:37:49.233Z" tests="4" failures="0" errors="0" time="0.034">
+    <testcase name="Status is 200 OK" time="0.034" classname="Phase5MerchantInvoicesAmpWebhooks54MerchantGeneratesInvoiceWith24HourExpiryWindow"/>
+    <testcase name="Invoice slug generated" time="0.034" classname="Phase5MerchantInvoicesAmpWebhooks54MerchantGeneratesInvoiceWith24HourExpiryWindow"/>
+    <testcase name="Status is PENDING" time="0.034" classname="Phase5MerchantInvoicesAmpWebhooks54MerchantGeneratesInvoiceWith24HourExpiryWindow"/>
+    <testcase name="Expires in 24 hours (+- 5 mins)" time="0.034" classname="Phase5MerchantInvoicesAmpWebhooks54MerchantGeneratesInvoiceWith24HourExpiryWindow"/>
+  </testsuite>
+  <testsuite name="Phase 5: Merchant Invoices &amp; Webhooks / 5.5 Public Inspection - Unauthenticated User Views Invoice Details" id="5750b96b-2042-4844-995a-1ba5cea589f5" timestamp="2026-10-09T16:37:49.233Z" tests="3" failures="0" errors="0" time="0.018">
+    <testcase name="Status is 200 OK" time="0.018" classname="Phase5MerchantInvoicesAmpWebhooks55PublicInspectionUnauthenticatedUserViewsInvoiceDetails"/>
+    <testcase name="Status is PENDING" time="0.018" classname="Phase5MerchantInvoicesAmpWebhooks55PublicInspectionUnauthenticatedUserViewsInvoiceDetails"/>
+    <testcase name="Amount matches" time="0.018" classname="Phase5MerchantInvoicesAmpWebhooks55PublicInspectionUnauthenticatedUserViewsInvoiceDetails"/>
+  </testsuite>
+  <testsuite name="Phase 5: Merchant Invoices &amp; Webhooks / 5.6 Customer Alice Pays Merchant Invoice" id="b08ec510-9d2f-4104-b31e-a29139dfc0f1" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.037">
+    <testcase name="Status is 200 OK" time="0.037" classname="Phase5MerchantInvoicesAmpWebhooks56CustomerAlicePaysMerchantInvoice"/>
+    <testcase name="Invoice status transitioned to PAID" time="0.037" classname="Phase5MerchantInvoicesAmpWebhooks56CustomerAlicePaysMerchantInvoice"/>
+  </testsuite>
+  <testsuite name="Phase 5: Merchant Invoices &amp; Webhooks / 5.7 Replay Guard - Reject Duplicate Payment on Settled Invoice (Expect 409)" id="023e2d1a-720f-478d-84f1-30c1aebfce47" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.020">
+    <testcase name="Status is 409 Conflict" time="0.020" classname="Phase5MerchantInvoicesAmpWebhooks57ReplayGuardRejectDuplicatePaymentOnSettledInvoiceExpect409"/>
+    <testcase name="Conflict message states invoice already PAID" time="0.020" classname="Phase5MerchantInvoicesAmpWebhooks57ReplayGuardRejectDuplicatePaymentOnSettledInvoiceExpect409"/>
+  </testsuite>
+  <testsuite name="Phase 10: Observability, Tracing &amp; Metrics / 10.1 Distributed Tracing - Correlation Header Reflection" id="f9690497-b574-41fe-bb1d-16f685e0b831" timestamp="2026-10-09T16:37:49.233Z" tests="2" failures="0" errors="0" time="0.015">
+    <testcase name="Status is 200 OK" time="0.015" classname="Phase10ObservabilityTracingAmpMetrics101DistributedTracingCorrelationHeaderReflection"/>
+    <testcase name="X-Correlation-ID reflected in headers" time="0.015" classname="Phase10ObservabilityTracingAmpMetrics101DistributedTracingCorrelationHeaderReflection"/>
+  </testsuite>
+  <testsuite name="Phase 10: Observability, Tracing &amp; Metrics / 10.2 Actuator Health Check - All Subsystems UP" id="532d7de2-d377-45dd-9243-28c9fb8a340b" timestamp="2026-10-09T16:37:49.233Z" tests="5" failures="0" errors="0" time="0.012">
+    <testcase name="Status is 200 OK" time="0.012" classname="Phase10ObservabilityTracingAmpMetrics102ActuatorHealthCheckAllSubsystemsUp"/>
+    <testcase name="Overall status is UP" time="0.012" classname="Phase10ObservabilityTracingAmpMetrics102ActuatorHealthCheckAllSubsystemsUp"/>
+    <testcase name="PostgreSQL component is UP" time="0.012" classname="Phase10ObservabilityTracingAmpMetrics102ActuatorHealthCheckAllSubsystemsUp"/>
+    <testcase name="Redis component is UP" time="0.012" classname="Phase10ObservabilityTracingAmpMetrics102ActuatorHealthCheckAllSubsystemsUp"/>
+    <testcase name="Elasticsearch component is UP" time="0.012" classname="Phase10ObservabilityTracingAmpMetrics102ActuatorHealthCheckAllSubsystemsUp"/>
+  </testsuite>
+  <testsuite name="Phase 10: Observability, Tracing &amp; Metrics / 10.3 Prometheus Metrics Exposition Scrape" id="7a0827b4-669d-41d4-a2d8-e23c94875411" timestamp="2026-10-09T16:37:49.233Z" tests="3" failures="0" errors="0" time="1.439">
+    <testcase name="Status is 200 OK" time="1.439" classname="Phase10ObservabilityTracingAmpMetrics103PrometheusMetricsExpositionScrape"/>
+    <testcase name="Prometheus contains jvm metrics" time="1.439" classname="Phase10ObservabilityTracingAmpMetrics103PrometheusMetricsExpositionScrape"/>
+    <testcase name="Prometheus contains task scheduler metrics" time="1.439" classname="Phase10ObservabilityTracingAmpMetrics103PrometheusMetricsExpositionScrape"/>
+  </testsuite>
+</testsuites>

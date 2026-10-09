@@ -1,0 +1,157 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {}
+    },
+    "metrics": {
+        "http_req_duration": {
+            "p(95)": 199.92214499999997,
+            "avg": 73.24122194903322,
+            "min": 0.9979,
+            "med": 56.909000000000006,
+            "max": 817.0852,
+            "p(90)": 155.6345700000001,
+            "thresholds": {
+                "p(99)<800": false,
+                "p(95)<400": false
+            }
+        },
+        "http_req_receiving": {
+            "avg": 3.3380104419669276,
+            "min": 0,
+            "med": 0.8909,
+            "max": 203.9209,
+            "p(90)": 9.469170000000014,
+            "p(95)": 16.128479999999996
+        },
+        "data_received": {
+            "count": 21865512,
+            "rate": 256098.45989096473
+        },
+        "vus_max": {
+            "value": 200,
+            "min": 200,
+            "max": 200
+        },
+        "http_req_waiting": {
+            "min": 0,
+            "med": 53.0691,
+            "max": 816.0861,
+            "p(90)": 148.42079000000018,
+            "p(95)": 190.78712,
+            "avg": 69.23158317489464
+        },
+        "equinox_cqrs_query_duration_ms": {
+            "max": 608,
+            "p(90)": 200,
+            "p(95)": 242,
+            "avg": 109.14627460752554,
+            "min": 15,
+            "med": 90
+        },
+        "vus": {
+            "value": 50,
+            "min": 3,
+            "max": 99
+        },
+        "http_req_duration{expected_response:true}": {
+            "max": 605.7728,
+            "p(90)": 134.09996,
+            "p(95)": 178.9955599999998,
+            "avg": 51.263210243659806,
+            "min": 0.9979,
+            "med": 26.2132
+        },
+        "http_req_blocked": {
+            "avg": 4.6914250199084195,
+            "min": 0,
+            "med": 1.4555,
+            "max": 239.6569,
+            "p(90)": 12.5616,
+            "p(95)": 21.294239999999984
+        },
+        "http_req_connecting": {
+            "avg": 4.271398392394962,
+            "min": 0,
+            "med": 1.2438,
+            "max": 230.4774,
+            "p(90)": 11.7055,
+            "p(95)": 19.7309
+        },
+        "iterations": {
+            "count": 40181,
+            "rate": 470.617482768245
+        },
+        "equinox_transfer_duration_ms": {
+            "avg": 85.4057924203273,
+            "min": 8,
+            "med": 67,
+            "max": 821,
+            "p(90)": 172,
+            "p(95)": 217,
+            "thresholds": {
+                "p(99)<800": false
+            }
+        },
+        "http_req_sending": {
+            "avg": 0.671628332172007,
+            "min": 0,
+            "med": 0,
+            "max": 192.7909,
+            "p(90)": 1.0133,
+            "p(95)": 2.266689999999992
+        },
+        "equinox_error_rate": {
+            "passes": 30129,
+            "fails": 10052,
+            "thresholds": {
+                "rate<0.05": true
+            },
+            "value": 0.7498320101540529
+        },
+        "http_reqs": {
+            "count": 40184,
+            "rate": 470.6526200831029
+        },
+        "http_req_tls_handshaking": {
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0
+        },
+        "http_req_failed": {
+            "passes": 30129,
+            "fails": 10055,
+            "value": 0.7497760302608003
+        },
+        "iteration_duration": {
+            "avg": 105.64801476817314,
+            "min": 21.3526,
+            "med": 88.5338,
+            "max": 888.4294,
+            "p(90)": 197.4799,
+            "p(95)": 242.9622
+        },
+        "data_sent": {
+            "rate": 315269.0187902249,
+            "count": 26917454
+        },
+        "equinox_invoice_query_duration_ms": {
+            "avg": 21.365126676602088,
+            "min": 1,
+            "med": 10,
+            "max": 302,
+            "p(90)": 55,
+            "p(95)": 80
+        }
+    },
+    "setup_data": {
+        "invoiceSlug": "inv_pyCfln2DsYba",
+        "token": "eyJhbGciOiJSUzI1NiJ9.eyJmZ3AiOiIzQlltOHJHZ1MvMk4xYW16UER4V3p5ejJZTVFjeE1nOHNjTDlkdGpPaytjPSIsInN1YiI6Ims2X3J1bm5lcl8xNzkxNTYzOTMyMDQ2IiwiaWF0IjoxNzkxNTYzOTMyLCJleHAiOjE3OTE1NjQ4MzJ9.gjUfQwNkOpCI6V0gFYc2i6vN2zk8dVBk_Z97JgIenUKvZ_N-tvJXgZpcX1jlDmw7X_ZsDcqqIRs_J4hibDFaw86Txq1vAcJ7GCcEB_A6LD0zpRfRdSBneoYRa-M6b04ST9pc--sXzgK6DdpONegDR_bAAlwtwC8y2-FXxatpfS8vDf50txQmlS1Yc3K0Cq1vdbmXVo4uqiQW-3XGI092U7VbxJT4HEcNeWPMnNmXnSG7d2n7kimIXsryllSzFh9YguS8qJ3Ev43hR8ArovQIdpZFS_wwsw7eQwYGjVKr67jNcFX-jM_nVCpjFqhkSSTLpuN1l6a4HTWtmjHjjBq09Q"
+    }
+}
