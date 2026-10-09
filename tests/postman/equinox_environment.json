@@ -1,0 +1,55 @@
+{
+  "id": "e44d34f0-459f-4318-971c-43f116a81ef3",
+  "name": "EquinoxPay-Local-Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8095",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "alice_account_id",
+      "value": "b4d87f17-26e0-4537-908f-9e153dc5dedd",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "bob_account_id",
+      "value": "6ca948d0-3173-4de9-8b1f-2588356017b0",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "alice_token",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "bob_token",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "merchant_token",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "invoice_slug",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "merchant_whsec",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

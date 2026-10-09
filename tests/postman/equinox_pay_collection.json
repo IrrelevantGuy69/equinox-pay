@@ -1,0 +1,945 @@
+{
+  "info": {
+    "_postman_id": "c1f72001-9a99-4d6d-8e42-7a5482b8b901",
+    "name": "Equinox Pay - Production Verification Suite (Phases 1-10)",
+    "description": "Comprehensive contract and functional verification suite for Equinox Pay core payment gateway.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Phase 1 & 2: Core Transfers & State Machine",
+      "item": [
+        {
+          "name": "1.1 Auth - Register Payer Alice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Token returned', function() { pm.expect(data.token).to.be.a('string'); });",
+                  "pm.environment.set('alice_token', data.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newman_alice_{{$timestamp}}\",\n  \"password\": \"Password123!\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v2/auth/register"
+          }
+        },
+        {
+          "name": "1.2 Auth - Register Payee Bob",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Token returned', function() { pm.expect(data.token).to.be.a('string'); });",
+                  "pm.environment.set('bob_token', data.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newman_bob_{{$timestamp}}\",\n  \"password\": \"Password123!\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v2/auth/register"
+          }
+        },
+        {
+          "name": "1.3 Core Transfer - Successful Peer-to-Peer Settlement",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set('transfer_idempotency_key', 'pm_tx_' + Date.now());"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.test('State transitioned to SETTLED', function() { pm.expect(data.status).to.eql('SETTLED'); });",
+                  "pm.test('Payment ID generated', function() { pm.expect(data.paymentId).to.be.a('string'); });",
+                  "pm.test('Amount matches', function() { pm.expect(data.amount).to.eql(15.00); });",
+                  "pm.environment.set('last_payment_id', data.paymentId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{transfer_idempotency_key}}"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "corr-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments/transfer?from={{alice_account_id}}&to={{bob_account_id}}&amount=15.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments",
+                "transfer"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{alice_account_id}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{bob_account_id}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "15.00"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.4 Idempotency Guard - Duplicate Replay Rejection (Expect 409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 409 Conflict', function() { pm.response.to.have.status(409); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Conflict message confirms already processed', function() {",
+                  "    pm.expect(data.message).to.include('already processed');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "{{transfer_idempotency_key}}"
+              },
+              {
+                "key": "X-Correlation-ID",
+                "value": "corr-replay-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments/transfer?from={{alice_account_id}}&to={{bob_account_id}}&amount=15.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments",
+                "transfer"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{alice_account_id}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{bob_account_id}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "15.00"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.5 Core Vault Direct Settlement - Genesis Node (api/v1/vault)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "pm.test('Confirmation message received', function() {",
+                  "    pm.expect(pm.response.text()).to.include('successfully settled');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "vault_direct_{{$timestamp}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vault/transfer?from={{alice_account_id}}&to={{bob_account_id}}&amount=10.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vault",
+                "transfer"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{alice_account_id}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{bob_account_id}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "10.00"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.6 Insufficient Funds Guard - Overdraft Rejection (Expect 409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 409 Conflict', function() { pm.response.to.have.status(409); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Error message specifies Insufficient funds', function() {",
+                  "    pm.expect(data.message).to.eql('Insufficient funds');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "overdraft_test_{{$timestamp}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments/transfer?from={{alice_account_id}}&to={{bob_account_id}}&amount=5000.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments",
+                "transfer"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{alice_account_id}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{bob_account_id}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "5000.00"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 3: Edge Defense & Security Controls",
+      "item": [
+        {
+          "name": "3.1 Input Validation - Reject Negative Transfer Amount (Expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 Bad Request', function() { pm.response.to.have.status(400); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Validation message explains positive amount', function() {",
+                  "    pm.expect(data.message).to.include('strictly positive');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "neg_test_{{$timestamp}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments/transfer?from={{alice_account_id}}&to={{bob_account_id}}&amount=-10.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments",
+                "transfer"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{alice_account_id}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{bob_account_id}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "-10.00"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.2 Input Validation - Reject Zero Transfer Amount (Expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 400 Bad Request', function() { pm.response.to.have.status(400); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Validation message explains positive amount', function() {",
+                  "    pm.expect(data.message).to.include('strictly positive');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "zero_test_{{$timestamp}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments/transfer?from={{alice_account_id}}&to={{bob_account_id}}&amount=0.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments",
+                "transfer"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{alice_account_id}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{bob_account_id}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "0.00"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.3 Device Fingerprinting - Reject Mismatched User-Agent (Expect 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 401 Unauthorized', function() { pm.response.to.have.status(401); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Error notes session hijack / device change', function() {",
+                  "    pm.expect(data.message).to.include('hijacked');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "Spoofed-Malicious-Browser/9.9"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v2/queries/history/{{alice_account_id}}"
+          }
+        },
+        {
+          "name": "3.4 Fraud Velocity Shield - Volumetric Exceed Guard (Expect 429)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 429 Too Many Requests', function() { pm.response.to.have.status(429); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Velocity limit error returned', function() {",
+                  "    pm.expect(data.error).to.include('Velocity Limit Exceeded');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              },
+              {
+                "key": "Idempotency-Key",
+                "value": "vol_fraud_{{$timestamp}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v2/payments/transfer?from={{alice_account_id}}&to={{bob_account_id}}&amount=50000.00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "payments",
+                "transfer"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{alice_account_id}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{bob_account_id}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "50000.00"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 4: CQRS Elasticsearch Engine",
+      "item": [
+        {
+          "name": "4.1 Payment History CQRS Read Model Query",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Returns an array from Elasticsearch', function() { pm.expect(data).to.be.an('array'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v2/queries/history/{{alice_account_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 5: Merchant Invoices & Webhooks",
+      "item": [
+        {
+          "name": "5.1 Auth - Register Merchant Charlie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.environment.set('merchant_token', data.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"charlie_coffee_{{$timestamp}}\",\n  \"password\": \"MerchantPass123!\",\n  \"role\": \"MERCHANT\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v2/auth/register"
+          }
+        },
+        {
+          "name": "5.2 RBAC Guard - Customer Forbidden from Merchant Route (Expect 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 403 Forbidden', function() { pm.response.to.have.status(403); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"25.00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v2/invoices/generate"
+          }
+        },
+        {
+          "name": "5.3 Merchant Configures Webhook Endpoint & Generates Secret",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Webhook secret starts with whsec_', function() {",
+                  "    pm.expect(data.webhookSecret).to.match(/^whsec_/);",
+                  "});",
+                  "pm.environment.set('merchant_whsec', data.webhookSecret);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchant_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"webhookUrl\": \"https://httpbin.org/post\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v2/merchants/webhook-config"
+          }
+        },
+        {
+          "name": "5.4 Merchant Generates Invoice with 24-Hour Expiry Window",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Invoice slug generated', function() { pm.expect(data.slug).to.match(/^inv_/); });",
+                  "pm.test('Status is PENDING', function() { pm.expect(data.status).to.eql('PENDING'); });",
+                  "pm.test('Expires in 24 hours (+- 5 mins)', function() {",
+                  "    var exp = new Date(data.expiresAt).getTime();",
+                  "    var now = Date.now();",
+                  "    var diffHours = (exp - now) / (1000 * 3600);",
+                  "    pm.expect(diffHours).to.be.above(23.8);",
+                  "    pm.expect(diffHours).to.be.below(24.2);",
+                  "});",
+                  "pm.environment.set('invoice_slug', data.slug);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{merchant_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"35.00\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v2/invoices/generate"
+          }
+        },
+        {
+          "name": "5.5 Public Inspection - Unauthenticated User Views Invoice Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Status is PENDING', function() { pm.expect(data.status).to.eql('PENDING'); });",
+                  "pm.test('Amount matches', function() { pm.expect(data.amount).to.eql(35.00); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v2/invoices/{{invoice_slug}}"
+          }
+        },
+        {
+          "name": "5.6 Customer Alice Pays Merchant Invoice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Invoice status transitioned to PAID', function() { pm.expect(data.status).to.eql('PAID'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v2/invoices/{{invoice_slug}}/pay"
+          }
+        },
+        {
+          "name": "5.7 Replay Guard - Reject Duplicate Payment on Settled Invoice (Expect 409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 409 Conflict', function() { pm.response.to.have.status(409); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Conflict message states invoice already PAID', function() {",
+                  "    pm.expect(data.message).to.include('already PAID');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{alice_token}}"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v2/invoices/{{invoice_slug}}/pay"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 10: Observability, Tracing & Metrics",
+      "item": [
+        {
+          "name": "10.1 Distributed Tracing - Correlation Header Reflection",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "pm.test('X-Correlation-ID reflected in headers', function() {",
+                  "    pm.expect(pm.response.headers.get('X-Correlation-ID')).to.eql('prod-trace-newman-9988');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Correlation-ID",
+                "value": "prod-trace-newman-9988"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "url": "{{baseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "10.2 Actuator Health Check - All Subsystems UP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "pm.test('Overall status is UP', function() { pm.expect(data.status).to.eql('UP'); });",
+                  "pm.test('PostgreSQL component is UP', function() { pm.expect(data.components.db.status).to.eql('UP'); });",
+                  "pm.test('Redis component is UP', function() { pm.expect(data.components.redis.status).to.eql('UP'); });",
+                  "pm.test('Elasticsearch component is UP', function() { pm.expect(data.components.elasticsearch.status).to.eql('UP'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "url": "{{baseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "10.3 Prometheus Metrics Exposition Scrape",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function() { pm.response.to.have.status(200); });",
+                  "var body = pm.response.text();",
+                  "pm.test('Prometheus contains jvm metrics', function() { pm.expect(body).to.include('jvm_memory_used_bytes'); });",
+                  "pm.test('Prometheus contains task scheduler metrics', function() { pm.expect(body).to.include('tasks_scheduled_execution'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.0"
+              }
+            ],
+            "url": "{{baseUrl}}/actuator/prometheus"
+          }
+        }
+      ]
+    }
+  ]
+}
