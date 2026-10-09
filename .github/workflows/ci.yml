@@ -1,0 +1,66 @@
+name: Equinox Pay CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-verify:
+    name: Build, Audit & Test Suite Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Grant Execute Permission to Maven Wrapper
+        run: chmod +x mvnw
+
+      - name: Compile and Run Flyway / Unit Tests
+        run: ./mvnw test-compile
+
+      - name: Execute Full Integration Test Suite (Phases 1-10)
+        run: ./mvnw clean verify -Dtest=*IntegrationTest,EquinoxPayApplicationTests,EdgeDefenseSecurityTest,OutboxAndKafkaCqrsTest
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: surefire-test-reports
+          path: target/surefire-reports/
+          retention-days: 7
+
+  docker-image:
+    name: Build & Smoke Test Production Docker Image
+    needs: build-and-verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: |
+          docker build -t equinox-pay:latest .
+
+      - name: Verify Docker Image Inspect
+        run: |
+          docker image inspect equinox-pay:latest
